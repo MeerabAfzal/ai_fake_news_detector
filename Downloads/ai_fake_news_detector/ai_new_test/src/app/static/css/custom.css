@@ -1,0 +1,256 @@
+/* Additional Custom Styles for Fake News Detector */
+
+/* Animations */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+/* Enhanced UI Elements */
+.animate-pulse {
+    animation: pulse 2s infinite ease-in-out;
+}
+
+.animate-slide-in {
+    animation: slideInRight 0.5s ease-out;
+}
+
+.animate-fade-up {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.shimmer-effect {
+    background: linear-gradient(90deg, 
+        rgba(243, 244, 246, 0) 0%, 
+        rgba(243, 244, 246, 0.2) 50%, 
+        rgba(243, 244, 246, 0) 100%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite linear;
+}
+
+/* Card Hover Effects */
+.hover-card {
+    transition: all 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Styles */
+.btn-gradient {
+    background-size: 200% auto;
+    transition: 0.5s;
+}
+
+.btn-gradient:hover {
+    background-position: right center;
+}
+
+.btn-gradient.primary {
+    background-image: linear-gradient(to right, #3b82f6 0%, #1d4ed8 51%, #3b82f6 100%);
+}
+
+.btn-gradient.danger {
+    background-image: linear-gradient(to right, #ef4444 0%, #b91c1c 51%, #ef4444 100%);
+}
+
+.btn-gradient.success {
+    background-image: linear-gradient(to right, #059669 0%, #10b981 51%, #059669 100%);
+}
+
+/* Custom Progress Bar */
+.progress-ring {
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: all 1s ease;
+}
+
+.progress-ring-circle {
+    transition: stroke-dashoffset 1s ease;
+    stroke-width: 8;
+    stroke-linecap: round;
+    fill: transparent;
+}
+
+.progress-ring-text {
+    font-weight: bold;
+    font-size: 1.5rem;
+    fill: #111827;
+}
+
+/* Toast Notification */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+.toast-notification {
+    background: white;
+    border-radius: 10px;
+    padding: 15px 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    animation: slideInRight 0.3s ease-out;
+    max-width: 350px;
+    color: #111827;
+}
+
+.toast-notification.success {
+    border-left: 5px solid #10b981;
+}
+
+.toast-notification.error {
+    border-left: 5px solid #ef4444;
+}
+
+.toast-notification.info {
+    border-left: 5px solid #3b82f6;
+}
+
+.toast-icon {
+    margin-right: 15px;
+    font-size: 1.5rem;
+}
+
+.toast-content {
+    flex: 1;
+}
+
+.toast-title {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.toast-message {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.toast-close {
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-left: 10px;
+    color: #9ca3af;
+}
+
+/* Dark Mode Styles (Toggle in JS) */
+.dark-mode {
+    background: #111827;
+    color: #f9fafb;
+}
+
+.dark-mode .card {
+    background-color: #1f2937;
+    border-color: #374151;
+}
+
+.dark-mode .form-control {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+}
+
+.dark-mode .text-muted {
+    color: #9ca3af !important;
+}
+
+.dark-mode .sample-article {
+    background-color: #1f2937;
+    border-color: #374151;
+}
+
+.dark-mode .sample-article:hover {
+    background-color: #111827;
+    border-color: #3b82f6;
+}
+
+.dark-mode .sample-article h5 {
+    color: #f9fafb;
+}
+
+.dark-mode .sample-article p {
+    color: #9ca3af;
+}
+
+.dark-mode .feature-highlight {
+    background-color: #1f2937;
+}
+
+.dark-mode .history-item {
+    background-color: #1f2937;
+}
+
+.dark-mode .history-item:hover {
+    background-color: #374151;
+}
+
+.dark-mode .toast-notification {
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
+.dark-mode .toast-message {
+    color: #9ca3af;
+}
+
+.dark-mode .toast-close {
+    color: #6b7280;
+}
+
+.dark-mode .alert-warning {
+    background-color: #422006;
+    border-color: #f59e0b;
+    color: #fcd34d;
+}
+
+.dark-mode .header-card {
+    background: #1f2937;
+    border-bottom: 3px solid #3b82f6;
+    color: #f9fafb;
+}
+
+/* Custom Border Style */
+.subtle-border {
+    border: 1px solid transparent;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 3px solid #3b82f6;
+}
+
+/* Responsive Fixes */
+@media (max-width: 768px) {
+    .header-card {
+        padding: 1.5rem;
+    }
+    
+    .main-title {
+        font-size: 1.5rem;
+    }
+    
+    .result-badge {
+        font-size: 1.2rem;
+    }
+} 

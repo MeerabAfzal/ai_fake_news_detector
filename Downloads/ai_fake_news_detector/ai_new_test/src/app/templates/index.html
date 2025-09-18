@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detective</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #6366f1;
+            --light: #f9fafb;
+            --dark: #111827;
+            --fake: #ef4444;
+            --real: #10b981;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 2rem 0;
+            transition: background 0.3s ease, color 0.3s ease;
+            color: #111827;
+        }
+        
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background-color: #ffffff;
+            color: #111827;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .header-card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: #111827;
+            border-bottom: 3px solid #3b82f6;
+        }
+        
+        .main-title {
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            opacity: 0.8;
+            font-weight: 300;
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-size: 1rem;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+            background-color: #ffffff;
+            color: #111827;
+        }
+        
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+        }
+        
+        .btn {
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+        
+        .loading {
+            display: none;
+        }
+        
+        .spinner-wrapper {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .result-card {
+            display: none;
+            margin-top: 2rem;
+            transition: all 0.5s;
+        }
+        
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+        }
+        
+        .result-badge {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .fake-badge {
+            background: linear-gradient(to right, var(--danger), #b91c1c);
+        }
+        
+        .real-badge {
+            background: linear-gradient(to right, #059669, var(--success));
+        }
+        
+        .confidence-container {
+            padding: 1rem 2rem 2rem;
+            text-align: center;
+        }
+        
+        .confidence-meter {
+            height: 10px;
+            background-color: #f3f4f6;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .confidence-value {
+            height: 100%;
+            width: 0;
+            transition: width 1s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        
+        .fake-meter {
+            background: linear-gradient(to right, var(--danger), #b91c1c);
+        }
+        
+        .real-meter {
+            background: linear-gradient(to right, #059669, var(--success));
+        }
+        
+        .confidence-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+        
+        .confidence-text {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .analysis-details {
+            padding: 1rem 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .history-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .history-container::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        .history-container::-webkit-scrollbar-track {
+            background: #f3f4f6;
+            border-radius: 10px;
+        }
+        
+        .history-container::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 10px;
+        }
+        
+        .history-item {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 5px solid;
+            background-color: #f9fafb;
+            animation: fadeInUp 0.3s ease-out forwards;
+        }
+        
+        .history-item:hover {
+            transform: translateX(5px);
+            background-color: #ffffff;
+        }
+        
+        .history-item.fake {
+            border-left-color: var(--fake);
+        }
+        
+        .history-item.real {
+            border-left-color: var(--real);
+        }
+        
+        .history-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 0.2rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        
+        .history-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0;
+        }
+        
+        .sample-article {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: #f9fafb;
+        }
+        
+        .sample-article:hover {
+            border-color: #3b82f6;
+            background-color: #ffffff;
+            transform: scale(1.02);
+        }
+        
+        .sample-article h5 {
+            margin-bottom: 0.5rem;
+            color: #111827;
+        }
+        
+        .sample-article p {
+            color: #6b7280;
+            margin-bottom: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .feature-highlight {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-radius: 15px;
+            background-color: #f9fafb;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #3b82f6;
+        }
+        
+        .no-history {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Dark mode toggle */
+        .dark-mode-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin-left: 15px;
+        }
+        
+        .dark-mode-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .dark-mode-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #d1d5db;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .dark-mode-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .dark-mode-slider {
+            background-color: #3b82f6;
+        }
+        
+        input:checked + .dark-mode-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .dark-mode-icons {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            pointer-events: none;
+            color: white;
+            font-size: 0.8rem;
+        }
+        
+        .alert-warning {
+            background-color: #fff7ed;
+            border-color: #f59e0b;
+            color: #7c2d12;
+        }
+        
+        .text-muted {
+            color: #6b7280 !important;
+        }
+        
+        @media (max-width: 768px) {
+            .history-section {
+                margin-top: 2rem;
+            }
+            
+            .feature-section {
+                margin-top: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container app-container">
+        <!-- Header -->
+        <div class="header-card animate-fade-in subtle-border">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="main-title">
+                        <i class="fas fa-magnifying-glass"></i> Fake News Detective
+                    </h1>
+                    <p class="subtitle">Your AI-powered tool to identify potentially misleading news articles</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="d-flex align-items-center justify-content-md-end">
+                        <div class="me-3">
+                            <span class="badge bg-danger">FAKE</span>
+                        </div>
+                        <div class="me-3">
+                            <span class="badge bg-success">REAL</span>
+                        </div>
+                        <label class="dark-mode-switch">
+                            <input type="checkbox" id="dark-mode-toggle">
+                            <span class="dark-mode-slider">
+                                <div class="dark-mode-icons">
+                                    <i class="fas fa-sun"></i>
+                                    <i class="fas fa-moon"></i>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Main Analysis Section -->
+            <div class="col-md-8">
+                <div class="card animate-fade-in">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4"><i class="fas fa-newspaper me-2"></i>Analyze News Article</h4>
+                        
+                        <form id="news-form">
+                            <div class="mb-4">
+                                <textarea id="news-text" class="form-control" rows="8" placeholder="Paste the news article text here..." required></textarea>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-gradient primary">
+                                    <i class="fas fa-magnifying-glass me-2"></i>Analyze Article
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div id="loading" class="loading mt-4">
+                            <div class="spinner-wrapper">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-3 mb-0">AI is analyzing your article...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results Card -->
+                <div id="result-card" class="card result-card animate-fade-in">
+                    <div class="card-body p-0">
+                        <div class="result-header">
+                            <div id="result-badge" class="result-badge">
+                                <i id="result-icon" class="fas"></i>
+                                <span id="prediction">Result</span>
+                            </div>
+                        </div>
+                        
+                        <div class="confidence-container">
+                            <div class="confidence-label">CONFIDENCE SCORE</div>
+                            <div class="confidence-meter">
+                                <div id="confidence-value" class="confidence-value"></div>
+                            </div>
+                            <div id="confidence-text" class="confidence-text">0%</div>
+                        </div>
+                        
+                        <div class="analysis-details">
+                            <div class="alert alert-warning mb-0">
+                                <strong>Note:</strong> This model is primarily trained on US political news. Results may be less reliable for other topics. Always cross-reference information with trusted sources.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sample Articles Section -->
+                <div class="card animate-fade-in mt-4 hover-card">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4"><i class="fas fa-bookmark me-2"></i>Sample Articles</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="sample-article" data-article="WASHINGTON (Reuters) - The U.S. Senate on Thursday approved a bill to fund the federal government through mid-February, averting the risk of a shutdown this week after overcoming objections related to vaccine mandates. The measure now heads to President Joe Biden for his signature. The Senate voted 69-28 in favor of the measure, which would keep the government open through February 18. The Senate acted after the House of Representatives approved the measure.">
+                                    <h5>Senate Approves Government Funding Bill, Averts Shutdown Risk</h5>
+                                    <p>WASHINGTON (Reuters) - The U.S. Senate on Thursday approved a bill to fund the federal government through mid-February...</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="sample-article" data-article="In a shocking revelation that has liberals stunned, President Biden has secretly agreed to allow the construction of Trump's border wall. Anonymous White House sources claim Biden admitted in private meetings that Trump's border policy was correct all along. 'The liberal mainstream media is desperately trying to hide this massive flip-flop,' said one insider. Conservatives are celebrating this as a major victory, while progressive lawmakers feel betrayed. The White House has refused to comment on these allegations.">
+                                    <h5>Biden Secretly Agrees To Complete Trump's Border Wall, Admits Trump Was Right</h5>
+                                    <p>In a shocking revelation that has liberals stunned, President Biden has secretly agreed to allow the construction of Trump's border wall...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="sample-article" data-article="WASHINGTON (Reuters) - The U.S. Supreme Court on Tuesday declined to hear a challenge to New York's mandate that healthcare workers be vaccinated against COVID-19 without religious exemptions. The court rejected a petition from 16 healthcare workers who sued, claiming the mandate violates their constitutional right to freely exercise their religion. The vaccination requirement, imposed last August, does not include a religious exemption, but does include medical exemptions. A lower court previously rejected the workers' claims.">
+                                    <h5>Supreme Court Declines to Hear Challenge to NY Vaccine Mandate</h5>
+                                    <p>WASHINGTON (Reuters) - The U.S. Supreme Court on Tuesday declined to hear a challenge to New York's mandate that healthcare workers be vaccinated...</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="sample-article" data-article="Congressional Democrats have drafted legislation that would make it illegal to display the American flag in public spaces without also displaying symbols of social justice movements. The bill, scheduled for a vote next week, would require all American flags to be displayed alongside Black Lives Matter, LGBTQ+ pride, and other progressive flags. 'This is part of our commitment to equity and inclusion,' said one Democratic lawmaker. Several Republican representatives have called the bill 'an attack on patriotism.' Constitutional lawyers are already preparing challenges.">
+                                    <h5>Democrats Draft Bill Making It Illegal To Display American Flag Without Social Justice Symbols</h5>
+                                    <p>Congressional Democrats have drafted legislation that would make it illegal to display the American flag in public spaces without also displaying symbols of social justice movements...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- History Section -->
+            <div class="col-md-4 history-section">
+                <div class="card animate-fade-in hover-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0"><i class="fas fa-history me-2"></i>Analysis History</h4>
+                            <button id="clear-history-btn" class="btn btn-sm btn-outline-secondary" style="display: none;">
+                                <i class="fas fa-trash-alt me-1"></i> Clear
+                            </button>
+                        </div>
+                        
+                        <div id="history-container" class="history-container">
+                            <div id="no-history" class="no-history">
+                                <i class="fas fa-inbox fa-2x mb-3 text-muted"></i>
+                                <p>Your analysis history will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feature Highlights -->
+                <div class="feature-section">
+                    <div class="feature-highlight animate-fade-in hover-card">
+                        <i class="fas fa-brain feature-icon"></i>
+                        <h5>Advanced AI Analysis</h5>
+                        <p class="text-muted">Our model is trained on thousands of verified articles to accurately detect misinformation</p>
+                    </div>
+                    
+                    <div class="feature-highlight animate-fade-in hover-card">
+                        <i class="fas fa-bolt feature-icon"></i>
+                        <h5>Instant Results</h5>
+                        <p class="text-muted">Get analysis within seconds to quickly verify information before sharing</p>
+                    </div>
+                    
+                    <div class="feature-highlight animate-fade-in hover-card">
+                        <i class="fas fa-shield-alt feature-icon"></i>
+                        <h5>Privacy Focused</h5>
+                        <p class="text-muted">All analysis is done securely with no personal data stored on our servers</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html> 
