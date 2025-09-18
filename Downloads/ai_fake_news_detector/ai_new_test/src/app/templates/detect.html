@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fake News Detector</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        textarea { width: 100%; height: 200px; margin: 10px 0; }
+        button { padding: 10px 20px; background: #4285f4; color: white; border: none; border-radius: 4px; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 4px; }
+        .real { background-color: #d4edda; border: 1px solid #c3e6cb; }
+        .fake { background-color: #f8d7da; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>Fake News Detector</h1>
+    <form method="post">
+        <p>Enter news text to analyze:</p>
+        <textarea name="text" required></textarea>
+        <button type="submit">Detect</button>
+    </form>
+    
+    {% if result %}
+    <div class="result {{ 'real' if result.prediction == 'REAL' else 'fake' }}">
+        <h2>Result: {{ result.prediction }}</h2>
+        <p>Confidence: {{ "%.2f"|format(result.confidence*100) }}%</p>
+        <p>Probability of being real news: {{ "%.2f"|format(result.probability_real*100) }}%</p>
+    </div>
+    {% endif %}
+</body>
+</html>
+        
